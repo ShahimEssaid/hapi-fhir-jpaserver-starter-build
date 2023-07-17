@@ -17,8 +17,11 @@
         <version>6.8.0</version>
     </parent>
 
-    <artifactId>hapi-fhir-jpaserver-starter</artifactId>
-    <packaging>war</packaging>
+    <groupId>com.essaid.fhir.hapi</groupId>
+    <artifactId>hapi-fhir-jpaserver-starter-build</artifactId>
+    <version>6.8.0-b1-SNAPSHOT</version>
+    <!-- SE: change to Jar packaging. -->
+    <!--<packaging>war</packaging>-->
 
     <properties>
         <java.version>11</java.version>
@@ -44,6 +47,12 @@
 
 
     <dependencies>
+        <!-- SE: Adding this dependency so it's a transitive dependency for dependant projects. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring_boot_version}</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-jetty-api</artifactId>
@@ -82,6 +91,12 @@
                     <groupId>jakarta.annotation</groupId>
                     <artifactId>jakarta.annotation-api</artifactId>
                 </exclusion>
+                <!-- SE: duplicate classes -->
+                <!-- [WARNING] Found duplicate and different classes in [com.github.bbottema:jetbrains-runtime-annotations:1.0.0, org.jetbrains:annotations:23.0.0]:-->
+                <exclusion>
+                    <groupId>com.github.bbottema</groupId>
+                    <artifactId>jetbrains-runtime-annotations</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -89,17 +104,24 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
-            <version>${project.version}</version>
+            <!-- SE: point to the parent version since we set our own version for this POM. Similar changes below. -->
+            <version>${project.parent.version}</version>
         </dependency>
         <!-- This dependency includes the EmailSenderImpl we will be using instead of standard javamail.-->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-subscription</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.zaxxer</groupId>
                     <artifactId>HikariCP-java7</artifactId>
+                </exclusion>
+                <!-- SE: duplicate classes -->
+                <!-- [WARNING] Found duplicate and different classes in [commons-logging:commons-logging:1.2, org.slf4j:jcl-over-slf4j:2.0.3]: -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -108,7 +130,7 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-base</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -118,25 +140,44 @@
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
+                <!-- SE: Ducplicate classes and opted to use the ones that come from Spring Boot Starter -->
+                <!-- [WARNING] Found duplicate and different classes in [org.apache.tomcat.embed:tomcat-embed-el:9.0.75, org.glassfish:jakarta.el:3.0.4]: -->
+                <exclusion>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>jakarta.el</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- This dependency includes the JPA CQL Server -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-storage-cr</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
+            <!-- SE: the version (3.1.0) clashes with embedded Tomcat's newer version and occasionally causes issues -->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+                <!-- SE: for duplicate classes warning -->
+                <!-- [WARNING] Found duplicate and different classes in [org.glassfish:jakarta.json:2.0.1, org.glassfish:javax.json:1.0.4]: -->
+                <exclusion>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- This dependency includes the JPA MDM Server -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-mdm</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <!-- This dependency includes the OpenAPI Server -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-server-openapi</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.yaml</groupId>
@@ -148,36 +189,39 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-testpage-overlay</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <type>war</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-testpage-overlay</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <classifier>classes</classifier>
         </dependency>
         <!-- This dependency is used to include the IPS Base Implementation -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-ips</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- HAPI-FHIR uses Logback for logging support. The logback library is included automatically by Maven as a part of the hapi-fhir-base dependency, but you also need to include a logging library. Logback
             is used here, but log4j would also be fine. -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
+        <!-- SE: for duplicate classes warning. -->
+        <!--        <dependency>-->
+        <!--            <groupId>ch.qos.logback</groupId>-->
+        <!--            <artifactId>logback-classic</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- Needed for JEE/Servlet support -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- SE: for duplicate classes warning and opted to use the ones that come from Spring Boot Starter when that's the difference -->
+        <!-- [WARNING] Found duplicate and different classes in [javax.servlet:javax.servlet-api:3.1.0, org.apache.tomcat.embed:tomcat-embed-core:9.0.75]: -->
+        <!--        <dependency>-->
+        <!--            <groupId>javax.servlet</groupId>-->
+        <!--            <artifactId>javax.servlet-api</artifactId>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
         <!-- If you are using HAPI narrative generation, you will need to include Thymeleaf as well. Otherwise the following can be omitted. -->
         <dependency>
@@ -250,8 +294,16 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-test-utilities</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
+            <!-- SE: duplicate classes -->
+            <!-- [WARNING] Found duplicate and different classes in [commons-logging:commons-logging:1.2, org.slf4j:jcl-over-slf4j:2.0.3]: -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -312,7 +364,7 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-test-utilities</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -407,10 +459,43 @@
             </plugins>
         </pluginManagement>
 
+        <!-- SE: disable this. -->
         <!-- Tells Maven to name the generated WAR file as ROOT.war -->
-        <finalName>ROOT</finalName>
+        <!-- <finalName>ROOT</finalName> -->
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <executions>
+                    <!-- SE: Build the usual war file but it is classified as "boot" and with the normal artifact naming.
+                    The tester overlay is added as usual. -->
+                    <execution>
+                        <id>bootwar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Build-Time>${maven.build.timestamp}</Build-Time>
+                                </manifestEntries>
+                            </archive>
+                            <classifier>boot</classifier>
+                            <overlays>
+                                <!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
+                                <overlay>
+                                    <groupId>ca.uhn.hapi.fhir</groupId>
+                                    <artifactId>hapi-fhir-testpage-overlay</artifactId>
+                                </overlay>
+                            </overlays>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -421,7 +506,88 @@
                         </goals>
                         <configuration>
                             <mainClass>ca.uhn.fhir.jpa.starter.Application</mainClass>
+                            <!-- SE: repackage the boot classified artifact (from above) but don't attach it yet.
+                            Because this is a jar project, the plugin repackages the file into a .jar artifact even
+                            though the file being repackaged is a .war file. This will be renamed below. -->
+                            <classifier>boot</classifier>
+                            <attach>false</attach>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- SE: Rename the boot repackaged file to .war, as it was before repackaging. A workaround for the above issue. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>move-bootwar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move file="${project.build.directory}/${project.artifactId}-${project.version}-boot.jar"
+                                      tofile="${project.build.directory}/${project.artifactId}-${project.version}-boot.war"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- SE: build overlays -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.4.2</version>
+                <executions>
+                    <!-- SE: Build an overlay for the starter project's webapp folder and classify it as "starter-overlay".
+                    This helps other projects with applying it if needed. -->
+                    <execution>
+                        <id>starter-overlay</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <workDirectory>${project.build.directory}/assembly/starter-overlay-work</workDirectory>
+                            <descriptors>
+                                <descriptor>src/assembly/starter-overlay.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <!-- SE: Build an overlay for this project's webapp-build folder and classify it as "build-overlay".
+                    This helps other projects with applying it if needed. -->
+                    <execution>
+                        <id>build-overlay</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <workDirectory>${project.build.directory}/assembly/build-overlay-work</workDirectory>
+                            <descriptors>
+                                <descriptor>src/assembly/build-overlay.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- SE: Attach sources. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -436,26 +602,6 @@
                 </configuration>
             </plugin>
 
-            <!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Build-Time>${maven.build.timestamp}</Build-Time>
-                        </manifestEntries>
-                    </archive>
-                    <attachClasses>true</attachClasses>
-                    <overlays>
-                        <overlay>
-                            <groupId>ca.uhn.hapi.fhir</groupId>
-                            <artifactId>hapi-fhir-testpage-overlay</artifactId>
-                        </overlay>
-                    </overlays>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
 
             <!-- This is to run the integration tests -->
             <plugin>
@@ -470,6 +616,11 @@
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
+                        <!-- SE: This was needed to get the IT to pass. Otherwise, the main artifact is placed
+                        on the modulepath even though there is no module file, and the classes won't be found. -->
+                        <configuration>
+                            <useModulePath>false</useModulePath>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

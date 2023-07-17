@@ -1,4 +1,10 @@
-# HAPI-FHIR Starter Project
+# :warning: HAPI-FHIR Starter Project Builds ([this project](https://github.com/ShahimEssaid/hapi-fhir-jpaserver-starter-build))
+
+This project is a customized Maven build and deployment of [the upstream project](https://github.com/hapifhir/hapi-fhir-jpaserver-starter).  Please see The README-BUILDS.md for additional information.
+
+The rest of this readme should be up-to-date with the upstream version.
+
+# HAPI-FHIR Starter Project 
 
 This project is a complete starter project you can use to deploy a FHIR server using HAPI FHIR JPA.
 
