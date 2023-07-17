@@ -70,7 +70,11 @@ public class ElasticsearchLastNR4IT {
 
   @BeforeAll
   public static void beforeClass() {
-	  embeddedElastic = new ElasticsearchContainer(ELASTIC_IMAGE).withStartupTimeout(Duration.of(300, ChronoUnit.SECONDS));
+	  embeddedElastic = new ElasticsearchContainer(ELASTIC_IMAGE).withStartupTimeout(Duration.of(300, ChronoUnit.SECONDS))
+		  // SE: this was needed to get this test to pass without OOM errors
+		  // TODO: this is not needed for the upstream code but not sure why this is occurring in relation to the other
+		  // changes. Fix it later.
+		  .withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
 	  embeddedElastic.start();
   }
   
